@@ -12,7 +12,7 @@
 
 // ===== CẤU HÌNH =====
 const CONFIG = {
-  SHEET_ID: 'YOUR_SHEET_ID_HERE', // Thay bằng ID của Google Sheet
+  SHEET_ID: '15eMfEvqNvy1qBNG1NXwr7eSBsYZA6KqlBB3lTyzTfhM', // Thay bằng ID của Google Sheet
   SHEET_NAME: 'chc',
   COLUMNS: {
     MA_NHAN_VIEN: 0,
@@ -27,6 +27,18 @@ const CONFIG = {
     NGAY_BAT_DAU_KHAM: 9
   }
 };
+
+// ===== WEB APP FUNCTIONS =====
+function doGet() {
+  return HtmlService.createTemplateFromFile('dashboard')
+    .evaluate()
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .setTitle('📋 Dashboard Quản lý Hợp đồng CHC');
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
 
 // ===== MENU FUNCTIONS =====
 function onOpen() {
@@ -216,10 +228,6 @@ function parseCurrency(currencyString) {
   if (!currencyString) return 0;
   if (typeof currencyString === 'number') return currencyString;
   return parseFloat(currencyString.replace(/[^0-9.-]+/g, '')) || 0;
-}
-
-function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
 // ===== EXPORT FUNCTIONS =====
