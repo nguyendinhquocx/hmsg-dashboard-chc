@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo Doanh thu</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: #ffffff;
+      color: #000000;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #666666;
+      font-size: 14px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .summary-card {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 20px;
+      background: #ffffff;
+    }
+
+    .summary-card h3 {
+      font-size: 12px;
+      font-weight: 500;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .summary-card .value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #000000;
+      margin-bottom: 4px;
+    }
+
+    .summary-card .change {
+      font-size: 12px;
+      color: #666666;
+    }
+
+    .chart-section {
+      margin-bottom: 32px;
+    }
+
+    .chart-container {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 24px;
+      background: #ffffff;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .chart {
+      width: 100%;
+      height: 300px;
+      position: relative;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: end;
+      height: 200px;
+      gap: 8px;
+      padding: 20px 0;
+    }
+
+    .bar {
+      flex: 1;
+      background: #000000;
+      min-height: 4px;
+      border-radius: 2px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+    }
+
+    .bar-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #666666;
+      white-space: nowrap;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #000000;
+      font-weight: 500;
+    }
+
+    .pie-chart {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .pie-slice {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .table-container {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      margin-bottom: 32px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    .table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #000000;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-primary {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.8;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .chart {
+        height: 250px;
+      }
+
+      .pie-chart {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Báo cáo Doanh thu</h1>
+      <p>Thống kê chi tiết doanh thu hợp đồng khám sức khỏe</p>
+    </div>
+
+    <div class="summary-grid" id="summaryGrid">
+      <div class="summary-card">
+        <h3>Tổng doanh thu</h3>
+        <div class="value" id="totalRevenue">-</div>
+        <div class="change" id="revenueChange">Tính từ đầu năm</div>
+      </div>
+      <div class="summary-card">
+        <h3>Đã thực hiện</h3>
+        <div class="value" id="completedRevenue">-</div>
+        <div class="change" id="completedPercent">-</div>
+      </div>
+      <div class="summary-card">
+        <h3>Chưa thực hiện</h3>
+        <div class="value" id="pendingRevenue">-</div>
+        <div class="change" id="pendingPercent">-</div>
+      </div>
+      <div class="summary-card">
+        <h3>Trung bình/HĐ</h3>
+        <div class="value" id="avgRevenue">-</div>
+        <div class="change" id="avgChange">Doanh thu trung bình</div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-container">
+        <div class="chart-title">📈 Doanh thu theo tháng</div>
+        <div class="chart">
+          <div class="bar-chart" id="monthlyChart">
+            <div class="loading">Đang tải dữ liệu...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-container">
+        <div class="chart-title">🥧 Phân bố theo trạng thái</div>
+        <div class="chart">
+          <div class="pie-chart" id="statusChart"></div>
+          <div class="legend" id="statusLegend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-container">
+        <div class="chart-title">👥 Top nhân viên theo doanh thu</div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mã NV</th>
+                <th>Số HĐ</th>
+                <th>Doanh thu</th>
+                <th>Tỷ lệ</th>
+                <th>Tiến độ</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTable">
+              <tr>
+                <td colspan="5" class="loading">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <button class="btn" onclick="refreshReport()">🔄 Làm mới</button>
+      <button class="btn btn-primary" onclick="exportReport()">📥 Xuất báo cáo</button>
+    </div>
+  </div>
+
+  <script>
+    let reportData = null;
+
+    // Khởi tạo
+    document.addEventListener('DOMContentLoaded', function() {
+      loadReportData();
+    });
+
+    function loadReportData() {
+      google.script.run
+        .withSuccessHandler(onReportDataLoaded)
+        .withFailureHandler(onError)
+        .getRevenueStats();
+    }
+
+    function onReportDataLoaded(data) {
+      reportData = data;
+      updateSummary();
+      renderMonthlyChart();
+      renderStatusChart();
+      renderEmployeeTable();
+    }
+
+    function onError(error) {
+      console.error('Lỗi:', error);
+      alert('Lỗi khi tải dữ liệu: ' + error.message);
+    }
+
+    function updateSummary() {
+      const { totalRevenue, completedRevenue, pendingRevenue, totalContracts } = reportData;
+      
+      document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+      document.getElementById('completedRevenue').textContent = formatCurrency(completedRevenue);
+      document.getElementById('pendingRevenue').textContent = formatCurrency(pendingRevenue);
+      document.getElementById('avgRevenue').textContent = formatCurrency(totalRevenue / totalContracts);
+      
+      const completedPercent = totalRevenue > 0 ? (completedRevenue / totalRevenue * 100).toFixed(1) : 0;
+      const pendingPercent = totalRevenue > 0 ? (pendingRevenue / totalRevenue * 100).toFixed(1) : 0;
+      
+      document.getElementById('completedPercent').textContent = `${completedPercent}% tổng DT`;
+      document.getElementById('pendingPercent').textContent = `${pendingPercent}% tổng DT`;
+    }
+
+    function renderMonthlyChart() {
+      const monthlyData = reportData.monthlyRevenue;
+      const chartContainer = document.getElementById('monthlyChart');
+      
+      if (Object.keys(monthlyData).length === 0) {
+        chartContainer.innerHTML = '<div class="loading">Không có dữ liệu theo tháng</div>';
+        return;
+      }
+      
+      const maxRevenue = Math.max(...Object.values(monthlyData));
+      const months = Object.keys(monthlyData).sort();
+      
+      chartContainer.innerHTML = months.map(month => {
+        const revenue = monthlyData[month];
+        const height = (revenue / maxRevenue) * 100;
+        const monthName = formatMonth(month);
+        
+        return `
+          <div class="bar" style="height: ${height}%" title="${monthName}: ${formatCurrency(revenue)}">
+            <div class="bar-value">${formatShortCurrency(revenue)}</div>
+            <div class="bar-label">${monthName}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderStatusChart() {
+      const statusData = reportData.statusBreakdown;
+      const chartContainer = document.getElementById('statusChart');
+      const legendContainer = document.getElementById('statusLegend');
+      
+      if (Object.keys(statusData).length === 0) {
+        chartContainer.innerHTML = '<div class="loading">Không có dữ liệu trạng thái</div>';
+        return;
+      }
+      
+      const total = Object.values(statusData).reduce((sum, count) => sum + count, 0);
+      const colors = ['#000000', '#666666', '#999999', '#cccccc'];
+      
+      let currentAngle = 0;
+      let chartHTML = '';
+      let legendHTML = '';
+      
+      Object.entries(statusData).forEach(([status, count], index) => {
+        const percentage = (count / total) * 100;
+        const angle = (count / total) * 360;
+        const color = colors[index % colors.length];
+        
+        // Simple pie chart representation
+        chartHTML += `<div class="pie-slice" style="background: conic-gradient(${color} 0deg ${angle}deg, transparent ${angle}deg 360deg); transform: rotate(${currentAngle}deg);"></div>`;
+        
+        legendHTML += `
+          <div class="legend-item">
+            <div class="legend-color" style="background: ${color}"></div>
+            <span>${status} (${count} - ${percentage.toFixed(1)}%)</span>
+          </div>
+        `;
+        
+        currentAngle += angle;
+      });
+      
+      chartContainer.innerHTML = chartHTML;
+      legendContainer.innerHTML = legendHTML;
+    }
+
+    function renderEmployeeTable() {
+      const employeeData = reportData.employeeStats;
+      const tbody = document.getElementById('employeeTable');
+      
+      if (Object.keys(employeeData).length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="loading">Không có dữ liệu nhân viên</td></tr>';
+        return;
+      }
+      
+      const totalRevenue = reportData.totalRevenue;
+      const sortedEmployees = Object.entries(employeeData)
+        .sort(([,a], [,b]) => b.revenue - a.revenue)
+        .slice(0, 10); // Top 10
+      
+      tbody.innerHTML = sortedEmployees.map(([employee, data]) => {
+        const percentage = totalRevenue > 0 ? (data.revenue / totalRevenue * 100).toFixed(1) : 0;
+        
+        return `
+          <tr>
+            <td>${employee}</td>
+            <td>${data.contracts}</td>
+            <td>${formatCurrency(data.revenue)}</td>
+            <td>${percentage}%</td>
+            <td>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${percentage}%"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function refreshReport() {
+      document.querySelectorAll('.loading').forEach(el => {
+        el.textContent = 'Đang tải dữ liệu...';
+      });
+      loadReportData();
+    }
+
+    function exportReport() {
+      // TODO: Implement export functionality
+      alert('Tính năng xuất báo cáo sẽ được phát triển trong phiên bản tiếp theo');
+    }
+
+    // Utility functions
+    function formatCurrency(amount) {
+      if (!amount) return '0 VNĐ';
+      return amount.toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    function formatShortCurrency(amount) {
+      if (!amount) return '0';
+      if (amount >= 1000000000) return (amount / 1000000000).toFixed(1) + 'B';
+      if (amount >= 1000000) return (amount / 1000000).toFixed(1) + 'M';
+      if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
+      return amount.toString();
+    }
+
+    function formatMonth(monthStr) {
+      const [year, month] = monthStr.split('-');
+      const monthNames = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+      return monthNames[parseInt(month) - 1] + '/' + year.slice(2);
+    }
+  </script>
+</body>
+</html>

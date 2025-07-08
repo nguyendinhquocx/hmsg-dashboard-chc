@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tìm kiếm Hợp đồng</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: #ffffff;
+      color: #000000;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #666666;
+      font-size: 14px;
+    }
+
+    .search-form {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #000000;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      background: #ffffff;
+      font-size: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-primary {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.8;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .results-section {
+      margin-top: 32px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .results-count {
+      font-size: 14px;
+      color: #666666;
+    }
+
+    .table-container {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 12px;
+      color: #666666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    .table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status.new {
+      background: #f0f0f0;
+      color: #000000;
+    }
+
+    .status.renewed {
+      background: #e5e5e5;
+      color: #000000;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666666;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #666666;
+    }
+
+    .quick-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .quick-filter {
+      padding: 8px 12px;
+      border: 1px solid #e5e5e5;
+      border-radius: 20px;
+      background: #ffffff;
+      color: #666666;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-filter:hover {
+      border-color: #000000;
+      color: #000000;
+    }
+
+    .quick-filter.active {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
+    }
+
+    .advanced-toggle {
+      margin-bottom: 20px;
+    }
+
+    .advanced-toggle button {
+      background: none;
+      border: none;
+      color: #666666;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .advanced-toggle button:hover {
+      color: #000000;
+    }
+
+    .advanced-filters {
+      display: none;
+      border-top: 1px solid #e5e5e5;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+
+    .advanced-filters.show {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      .table {
+        min-width: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔍 Tìm kiếm Hợp đồng</h1>
+      <p>Tìm kiếm và lọc hợp đồng khám sức khỏe theo nhiều tiêu chí</p>
+    </div>
+
+    <div class="search-form">
+      <div class="quick-filters">
+        <div class="quick-filter active" data-filter="all">Tất cả</div>
+        <div class="quick-filter" data-filter="new">Ký mới</div>
+        <div class="quick-filter" data-filter="renewed">Tái ký</div>
+        <div class="quick-filter" data-filter="high-value">Giá trị cao</div>
+        <div class="quick-filter" data-filter="recent">Gần đây</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Từ khóa tìm kiếm</label>
+        <input type="text" class="form-input" id="searchKeyword" placeholder="Nhập tên công ty, mã hợp đồng, mã nhân viên...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Loại tìm kiếm</label>
+          <select class="form-select" id="searchType">
+            <option value="all">Tất cả</option>
+            <option value="company">Công ty</option>
+            <option value="employee">Nhân viên</option>
+            <option value="contract">Mã hợp đồng</option>
+            <option value="status">Trạng thái</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Trạng thái</label>
+          <select class="form-select" id="statusFilter">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Ký mới">Ký mới</option>
+            <option value="Tái ký">Tái ký</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="advanced-toggle">
+        <button type="button" onclick="toggleAdvanced()">⚙️ Tìm kiếm nâng cao</button>
+      </div>
+
+      <div class="advanced-filters" id="advancedFilters">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Doanh thu từ (VNĐ)</label>
+            <input type="number" class="form-input" id="revenueFrom" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Doanh thu đến (VNĐ)</label>
+            <input type="number" class="form-input" id="revenueTo" placeholder="999999999">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Số người khám từ</label>
+            <input type="number" class="form-input" id="peopleFrom" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số người khám đến</label>
+            <input type="number" class="form-input" id="peopleTo" placeholder="1000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ngày ký từ</label>
+            <input type="date" class="form-input" id="dateFrom">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày ký đến</label>
+            <input type="date" class="form-input" id="dateTo">
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" onclick="clearSearch()">🗑️ Xóa bộ lọc</button>
+        <button class="btn btn-primary" onclick="performSearch()">🔍 Tìm kiếm</button>
+      </div>
+    </div>
+
+    <div class="results-section" id="resultsSection" style="display: none;">
+      <div class="results-header">
+        <div class="results-count" id="resultsCount">Tìm thấy 0 kết quả</div>
+        <button class="btn" onclick="exportResults()">📥 Xuất kết quả</button>
+      </div>
+
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mã NV</th>
+              <th>Công ty</th>
+              <th>Mã HĐ</th>
+              <th>Ngày ký</th>
+              <th>Trạng thái</th>
+              <th>Doanh thu</th>
+              <th>Số người</th>
+            </tr>
+          </thead>
+          <tbody id="resultsTable">
+            <tr>
+              <td colspan="7" class="loading">Nhấn tìm kiếm để xem kết quả</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let searchResults = [];
+    let currentQuickFilter = 'all';
+
+    // Khởi tạo
+    document.addEventListener('DOMContentLoaded', function() {
+      setupEventListeners();
+      setupQuickFilters();
+    });
+
+    function setupEventListeners() {
+      const searchKeyword = document.getElementById('searchKeyword');
+      searchKeyword.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+    }
+
+    function setupQuickFilters() {
+      const filters = document.querySelectorAll('.quick-filter');
+      filters.forEach(filter => {
+        filter.addEventListener('click', function() {
+          // Remove active class from all filters
+          filters.forEach(f => f.classList.remove('active'));
+          // Add active class to clicked filter
+          this.classList.add('active');
+          
+          currentQuickFilter = this.dataset.filter;
+          applyQuickFilter(currentQuickFilter);
+        });
+      });
+    }
+
+    function applyQuickFilter(filterType) {
+      // Reset form
+      clearSearch();
+      
+      switch (filterType) {
+        case 'new':
+          document.getElementById('statusFilter').value = 'Ký mới';
+          break;
+        case 'renewed':
+          document.getElementById('statusFilter').value = 'Tái ký';
+          break;
+        case 'high-value':
+          document.getElementById('revenueFrom').value = '100000000'; // 100M+
+          toggleAdvanced(true);
+          break;
+        case 'recent':
+          const today = new Date();
+          const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+          document.getElementById('dateFrom').value = lastMonth.toISOString().split('T')[0];
+          document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+          toggleAdvanced(true);
+          break;
+      }
+      
+      if (filterType !== 'all') {
+        performSearch();
+      }
+    }
+
+    function toggleAdvanced(show = null) {
+      const advancedFilters = document.getElementById('advancedFilters');
+      if (show === null) {
+        advancedFilters.classList.toggle('show');
+      } else {
+        advancedFilters.classList.toggle('show', show);
+      }
+    }
+
+    function performSearch() {
+      const searchParams = {
+        keyword: document.getElementById('searchKeyword').value,
+        type: document.getElementById('searchType').value,
+        status: document.getElementById('statusFilter').value,
+        revenueFrom: parseFloat(document.getElementById('revenueFrom').value) || 0,
+        revenueTo: parseFloat(document.getElementById('revenueTo').value) || Infinity,
+        peopleFrom: parseInt(document.getElementById('peopleFrom').value) || 0,
+        peopleTo: parseInt(document.getElementById('peopleTo').value) || Infinity,
+        dateFrom: document.getElementById('dateFrom').value,
+        dateTo: document.getElementById('dateTo').value
+      };
+
+      // Show loading
+      document.getElementById('resultsSection').style.display = 'block';
+      document.getElementById('resultsTable').innerHTML = 
+        '<tr><td colspan="7" class="loading">Đang tìm kiếm...</td></tr>';
+
+      // Perform search
+      google.script.run
+        .withSuccessHandler(onSearchResults)
+        .withFailureHandler(onSearchError)
+        .advancedSearch(searchParams);
+    }
+
+    function onSearchResults(results) {
+      searchResults = results;
+      renderResults();
+    }
+
+    function onSearchError(error) {
+      console.error('Lỗi tìm kiếm:', error);
+      document.getElementById('resultsTable').innerHTML = 
+        '<tr><td colspan="7" class="empty">Lỗi khi tìm kiếm: ' + error.message + '</td></tr>';
+    }
+
+    function renderResults() {
+      const tbody = document.getElementById('resultsTable');
+      const resultsCount = document.getElementById('resultsCount');
+      
+      resultsCount.textContent = `Tìm thấy ${searchResults.length} kết quả`;
+
+      if (searchResults.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Không tìm thấy kết quả nào</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = searchResults.map(contract => `
+        <tr>
+          <td>${contract.maNhanVien}</td>
+          <td title="${contract.maCongTy}">${truncateText(contract.maCongTy, 25)}</td>
+          <td>${contract.maHopDong}</td>
+          <td>${contract.ngayKy}</td>
+          <td><span class="status ${getStatusClass(contract.trangThaiKy)}">${contract.trangThaiKy}</span></td>
+          <td>${contract.doanhThu}</td>
+          <td>${contract.soNguoiKham}</td>
+        </tr>
+      `).join('');
+    }
+
+    function clearSearch() {
+      // Reset form fields
+      document.getElementById('searchKeyword').value = '';
+      document.getElementById('searchType').value = 'all';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('revenueFrom').value = '';
+      document.getElementById('revenueTo').value = '';
+      document.getElementById('peopleFrom').value = '';
+      document.getElementById('peopleTo').value = '';
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+      
+      // Hide advanced filters
+      document.getElementById('advancedFilters').classList.remove('show');
+      
+      // Hide results
+      document.getElementById('resultsSection').style.display = 'none';
+      
+      // Reset quick filters
+      document.querySelectorAll('.quick-filter').forEach(f => f.classList.remove('active'));
+      document.querySelector('.quick-filter[data-filter="all"]').classList.add('active');
+      currentQuickFilter = 'all';
+    }
+
+    function exportResults() {
+      if (searchResults.length === 0) {
+        alert('Không có kết quả để xuất');
+        return;
+      }
+      
+      // TODO: Implement export functionality
+      alert('Tính năng xuất kết quả sẽ được phát triển trong phiên bản tiếp theo');
+    }
+
+    // Utility functions
+    function truncateText(text, maxLength) {
+      if (!text) return '';
+      return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+
+    function getStatusClass(status) {
+      if (!status) return '';
+      return status.toLowerCase().includes('mới') ? 'new' : 'renewed';
+    }
+  </script>
+</body>
+</html>
